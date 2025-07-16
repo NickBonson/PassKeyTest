@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
     private fun registerPasskey() {
         lifecycleScope.launch {
             val request = CreatePublicKeyCredentialRequest("register_challenge")
-            credentialManager.createCredentialAsync(this@MainActivity, request)
+            credentialManager.createCredential(this@MainActivity, request)
             passkeyService.register()
         }
     }
@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val option = GetPublicKeyCredentialOption("login_challenge")
             val request = GetCredentialRequest(listOf(option))
-            credentialManager.getCredentialAsync(this@MainActivity, request)
+            credentialManager.getCredential(this@MainActivity, request)
             passkeyService.login()
         }
     }
