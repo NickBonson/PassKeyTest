@@ -1,47 +1,61 @@
 package nick.bonson.passkeytest
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import nick.bonson.passkeytest.ui.theme.PassKeyTestTheme
+import android.webkit.WebViewClient
+import androidx.appcompat.app.AppCompatActivity
+import nick.bonson.passkeytest.databinding.ActivityMainBinding
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.http.GET
+import retrofit2.http.Url
+import okhttp3.ResponseBody
 
-class MainActivity : ComponentActivity() {
+interface PageService {
+    @GET
+    fun fetchPage(@Url url: String): Call<ResponseBody>
+}
+
+class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            PassKeyTestTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BASIC }
+        val client = OkHttpClient.Builder()
+            .addInterceptor(logging)
+            .build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://example.com/")
+            .client(client)
+            .build()
+
+        val service = retrofit.create(PageService::class.java)
+
+        service.fetchPage("https://example.com").enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                val html = response.body()?.string()
+                if (html != null) {
+                    runOnUiThread {
+                        binding.webView.webViewClient = WebViewClient()
+                        binding.webView.loadDataWithBaseURL("https://example.com", html, "text/html", "utf-8", null)
+                    }
                 }
             }
-        }
-    }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    PassKeyTestTheme {
-        Greeting("Android")
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                runOnUiThread {
+                    binding.webView.webViewClient = WebViewClient()
+                    binding.webView.loadUrl("https://example.com")
+                }
+            }
+        })
     }
 }
