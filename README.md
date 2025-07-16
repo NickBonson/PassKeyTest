@@ -5,6 +5,7 @@ This project demonstrates a simple implementation of passkeys on Android and iOS
 ## Android
 - Uses Retrofit and OkHttp for networking.
 - Passkey support via `CredentialManager` from the `androidx.credentials` library.
+- Requires the Play Services auth provider dependency `androidx.credentials:play-services-auth`.
 - Layout uses ViewBinding.
 
 ## iOS
