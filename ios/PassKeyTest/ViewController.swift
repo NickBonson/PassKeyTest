@@ -27,7 +27,11 @@ class ViewController: UIViewController {
     @objc private func registerPasskey() {
         let provider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: "example.com")
         let challenge = "register_challenge".data(using: .utf8)!
-        let request = provider.createCredentialRegistrationRequest(challenge: challenge, name: nil, userID: UUID().uuidString.data(using: .utf8)!)
+        let request = provider.createCredentialRegistrationRequest(
+            challenge: challenge,
+            name: "user@example.com",
+            userID: UUID().uuidString.data(using: .utf8)!
+        )
         let controller = ASAuthorizationController(authorizationRequests: [request])
         controller.performRequests()
     }

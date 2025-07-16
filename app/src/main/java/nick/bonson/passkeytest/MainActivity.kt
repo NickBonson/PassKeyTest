@@ -83,7 +83,23 @@ class MainActivity : AppCompatActivity() {
 
     private fun registerPasskey() {
         lifecycleScope.launch {
-            val request = CreatePublicKeyCredentialRequest("register_challenge")
+            val requestJson = """
+                {
+                  "challenge": "register_challenge",
+                  "rp": {
+                    "name": "Example",
+                    "id": "example.com"
+                  },
+                  "user": {
+                    "id": "demo-user",
+                    "name": "user@example.com",
+                    "displayName": "Example User"
+                  },
+                  "pubKeyCredParams": [{"type": "public-key", "alg": -7}]
+                }
+            """.trimIndent()
+
+            val request = CreatePublicKeyCredentialRequest(requestJson)
             credentialManager.createCredential(this@MainActivity, request)
             passkeyService.register()
         }
@@ -91,7 +107,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun loginPasskey() {
         lifecycleScope.launch {
-            val option = GetPublicKeyCredentialOption("login_challenge")
+            val optionJson = """
+                {
+                  "challenge": "login_challenge",
+                  "rpId": "example.com"
+                }
+            """.trimIndent()
+
+            val option = GetPublicKeyCredentialOption(optionJson)
             val request = GetCredentialRequest(listOf(option))
             credentialManager.getCredential(this@MainActivity, request)
             passkeyService.login()
