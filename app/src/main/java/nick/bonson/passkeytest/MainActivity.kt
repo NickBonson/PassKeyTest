@@ -19,6 +19,7 @@ import retrofit2.Retrofit
 import retrofit2.http.GET
 import retrofit2.http.Url
 import okhttp3.ResponseBody
+import android.util.Base64
 
 interface PageService {
     @GET
@@ -83,6 +84,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun registerPasskey() {
         lifecycleScope.launch {
+            val userId = "demo-user"
+            val userIdBase64 = Base64.encodeToString(userId.toByteArray(), Base64.NO_WRAP)
             val requestJson = """
                 {
                   "challenge": "register_challenge",
@@ -91,11 +94,12 @@ class MainActivity : AppCompatActivity() {
                     "id": "example.com"
                   },
                   "user": {
-                    "id": "demo-user",
+                    "id": "$userIdBase64",
                     "name": "user@example.com",
                     "displayName": "Example User"
                   },
-                  "pubKeyCredParams": [{"type": "public-key", "alg": -7}]
+                  "pubKeyCredParams": [{"type": "public-key", "alg": -7}],
+                  "attestation": "none"
                 }
             """.trimIndent()
 
