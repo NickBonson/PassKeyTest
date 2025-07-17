@@ -21,4 +21,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Sign In with Passkey" />
+
+    <Button
+        android:id="@+id/fidoRegisterButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Register FIDO2" />
+
+    <Button
+        android:id="@+id/fidoLoginButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sign In with FIDO2" />
 </LinearLayout>
